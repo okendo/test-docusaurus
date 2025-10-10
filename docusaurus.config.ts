@@ -1,8 +1,10 @@
+// @ts-check
+// Note: type annotations allow type checking and IDEs autocompletion
+
 import type * as Preset from "@docusaurus/preset-classic";
 import type { Config } from "@docusaurus/types";
-import { themes as prismThemes } from "prism-react-renderer";
-
-// This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
+import type * as Plugin from "@docusaurus/types/src/plugin";
+import type * as OpenApiPlugin from "docusaurus-plugin-openapi-docs";
 
 const config: Config = {
 	title: "Test Docusaurus",
@@ -18,14 +20,15 @@ const config: Config = {
 	url: "https://okendo.github.io",
 	// Set the /<baseUrl>/ pathname under which your site is served
 	// For GitHub pages deployment, it is often '/<projectName>/'
-	baseUrl: "/test-docusaurus",
+	baseUrl: "/",
+	onBrokenLinks: "throw",
+	onBrokenMarkdownLinks: "warn",
 
 	// GitHub pages deployment config.
 	// If you aren't using GitHub pages, you don't need these.
 	organizationName: "facebook", // Usually your GitHub org/user name.
 	projectName: "docusaurus", // Usually your repo name.
-
-	onBrokenLinks: "throw",
+	trailingSlash: false,
 
 	// Even if you don't use internationalization, you can use this field to set
 	// useful metadata like html lang. For example, if your site is Chinese, you
@@ -40,111 +43,212 @@ const config: Config = {
 			"classic",
 			{
 				docs: {
-					sidebarPath: "./sidebars.ts",
+					sidebarPath: require.resolve("./sidebars.ts"),
 					// Please change this to your repo.
 					// Remove this to remove the "edit this page" links.
 					editUrl:
 						"https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/",
-				},
-				blog: {
-					showReadingTime: true,
-					feedOptions: {
-						type: ["rss", "atom"],
-						xslt: true,
-					},
-					// Please change this to your repo.
-					// Remove this to remove the "edit this page" links.
-					editUrl:
-						"https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/",
-					// Useful options to enforce blogging best practices
-					onInlineTags: "warn",
-					onInlineAuthors: "warn",
-					onUntruncatedBlogPosts: "warn",
+					docItemComponent: "@theme/ApiItem", // Derived from docusaurus-theme-openapi
 				},
 				theme: {
-					customCss: "./src/css/custom.css",
+					customCss: require.resolve("./src/css/custom.css"),
 				},
 			} satisfies Preset.Options,
 		],
 	],
 
-	themeConfig: {
-		// Replace with your project's social card
-		image: "img/docusaurus-social-card.jpg",
-		colorMode: {
-			respectPrefersColorScheme: true,
-		},
-		navbar: {
-			title: "My Site",
-			logo: {
-				alt: "My Site Logo",
-				src: "img/logo.svg",
+	themeConfig:
+		{
+			docs: {
+				sidebar: {
+					hideable: true,
+				},
 			},
-			items: [
-				{
-					type: "docSidebar",
-					sidebarId: "tutorialSidebar",
-					position: "left",
-					label: "Tutorial",
+			navbar: {
+				title: "My Site",
+				logo: {
+					alt: "My Site Logo",
+					src: "img/logo.svg",
 				},
-				{ to: "/blog", label: "Blog", position: "left" },
+				items: [
+					{
+						label: "Petstore API",
+						position: "left",
+						to: "/docs/category/petstore-api",
+					}
+				],
+			},
+			footer: {
+				style: "dark",
+				links: [
+					{
+						title: "Docs",
+						items: [
+							{
+								label: "Tutorial",
+								to: "/docs/intro",
+							},
+						],
+					},
+					{
+						title: "Community",
+						items: [
+							{
+								label: "Stack Overflow",
+								href: "https://stackoverflow.com/questions/tagged/docusaurus",
+							},
+							{
+								label: "Discord",
+								href: "https://discordapp.com/invite/docusaurus",
+							}
+						],
+					},
+					{
+						title: "More",
+						items: [
+							{
+								label: "GitHub",
+								href: "https://github.com/facebook/docusaurus",
+							},
+						],
+					},
+				],
+				copyright: `Copyright © ${new Date().getFullYear()} My Project, Inc. Built with Docusaurus.`,
+			},
+			prism: {
+				additionalLanguages: [
+					"ruby",
+					"csharp",
+					"php",
+					"java",
+					"powershell",
+					"json",
+					"bash",
+					"dart",
+					"objectivec",
+					"r",
+				],
+			},
+			languageTabs: [
 				{
-					href: "https://github.com/facebook/docusaurus",
-					label: "GitHub",
-					position: "right",
+					highlight: "python",
+					language: "python",
+					logoClass: "python",
+				},
+				{
+					highlight: "bash",
+					language: "curl",
+					logoClass: "curl",
+				},
+				{
+					highlight: "csharp",
+					language: "csharp",
+					logoClass: "csharp",
+				},
+				{
+					highlight: "go",
+					language: "go",
+					logoClass: "go",
+				},
+				{
+					highlight: "javascript",
+					language: "nodejs",
+					logoClass: "nodejs",
+				},
+				{
+					highlight: "ruby",
+					language: "ruby",
+					logoClass: "ruby",
+				},
+				{
+					highlight: "php",
+					language: "php",
+					logoClass: "php",
+				},
+				{
+					highlight: "java",
+					language: "java",
+					logoClass: "java",
+					variant: "unirest",
+				},
+				{
+					highlight: "powershell",
+					language: "powershell",
+					logoClass: "powershell",
+				},
+				{
+					highlight: "dart",
+					language: "dart",
+					logoClass: "dart",
+				},
+				{
+					highlight: "javascript",
+					language: "javascript",
+					logoClass: "javascript",
+				},
+				{
+					highlight: "c",
+					language: "c",
+					logoClass: "c",
+				},
+				{
+					highlight: "objective-c",
+					language: "objective-c",
+					logoClass: "objective-c",
+				},
+				{
+					highlight: "ocaml",
+					language: "ocaml",
+					logoClass: "ocaml",
+				},
+				{
+					highlight: "r",
+					language: "r",
+					logoClass: "r",
+				},
+				{
+					highlight: "swift",
+					language: "swift",
+					logoClass: "swift",
+				},
+				{
+					highlight: "kotlin",
+					language: "kotlin",
+					logoClass: "kotlin",
+				},
+				{
+					highlight: "rust",
+					language: "rust",
+					logoClass: "rust",
 				},
 			],
-		},
-		footer: {
-			style: "dark",
-			links: [
-				{
-					title: "Docs",
-					items: [
-						{
-							label: "Tutorial",
-							to: "/docs/intro",
+		} satisfies Preset.ThemeConfig,
+
+	plugins: [
+		[
+			"docusaurus-plugin-openapi-docs",
+			{
+				id: "openapi",
+				docsPluginId: "classic",
+				config: {
+					petstore: {
+						specPath: "examples/petstore.yaml",
+						outputDir: "docs/petstore",
+						downloadUrl:
+							"https://raw.githubusercontent.com/PaloAltoNetworks/docusaurus-template-openapi-docs/main/examples/petstore.yaml",
+						sidebarOptions: {
+							groupPathsBy: "tag",
+							categoryLinkSource: "tag",
 						},
-					],
-				},
-				{
-					title: "Community",
-					items: [
-						{
-							label: "Stack Overflow",
-							href: "https://stackoverflow.com/questions/tagged/docusaurus",
-						},
-						{
-							label: "Discord",
-							href: "https://discordapp.com/invite/docusaurus",
-						},
-						{
-							label: "X",
-							href: "https://x.com/docusaurus",
-						},
-					],
-				},
-				{
-					title: "More",
-					items: [
-						{
-							label: "Blog",
-							to: "/blog",
-						},
-						{
-							label: "GitHub",
-							href: "https://github.com/facebook/docusaurus",
-						},
-					],
-				},
-			],
-			copyright: `Copyright © ${new Date().getFullYear()} My Project, Inc. Built with Docusaurus.`,
-		},
-		prism: {
-			theme: prismThemes.github,
-			darkTheme: prismThemes.dracula,
-		},
-	} satisfies Preset.ThemeConfig,
+					} satisfies OpenApiPlugin.Options,
+				} satisfies Plugin.PluginOptions,
+			},
+		],
+	],
+
+	themes: ["docusaurus-theme-openapi-docs"],
 };
 
-export default config;
+export default async function createConfig() {
+	return config;
+}
